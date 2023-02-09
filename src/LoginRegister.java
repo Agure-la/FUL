@@ -738,7 +738,7 @@ public class LoginRegister extends JFrame{
                 createDelivery.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-
+                      createDeliveryOrderFunc();
                     }
                 });
 
@@ -749,7 +749,7 @@ public class LoginRegister extends JFrame{
                 createPickup.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-
+                        createPickupOrderFunc();
                     }
                 });
 
@@ -815,7 +815,154 @@ public class LoginRegister extends JFrame{
 
         JFrame deliveryFrame = new JFrame("Delivery Orders");
 
+        JLabel businessLabel, productLabel, quantityLabel, priceLabel, pickupLabel, descriptionLabel, phoneNoLabel, orderNo, orderStatus;
+        JTextField businessTxt, productTxt, quantityTxt, priceTxt, pickupTxt, phoneTxt, orderNoTxt;
+        JTextArea descriptionTxtArea;
+        JButton place;
 
+        deliveryFrame.setVisible(true);
+        deliveryFrame.setSize(800, 700);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        businessLabel = new JLabel("Business Name");
+        productLabel = new JLabel("Items");
+        quantityLabel = new JLabel("Quantity");
+        priceLabel = new JLabel("Price");
+        pickupLabel = new JLabel("Pickup Location");
+        descriptionLabel = new JLabel("Instructions");
+        phoneNoLabel = new JLabel("Phone Number");
+        orderNo = new JLabel("Order No");
+        orderStatus = new JLabel("Order Status");
+        businessTxt = new JTextField();
+        productTxt = new JTextField();
+        quantityTxt = new JTextField();
+        priceTxt = new JTextField();
+        pickupTxt = new JTextField();
+        descriptionTxtArea = new JTextArea();
+        phoneTxt = new JTextField();
+        orderNoTxt = new JTextField();
+        String [] choices = {"Received", "Processing","Failed", "Cancelled", "Completed"};
+        final JComboBox<String> status = new JComboBox<>(choices);
+
+        place = new JButton("Place Order");
+
+        businessLabel.setBounds(80, 70, 200, 30);
+        productLabel.setBounds(80, 110, 200, 30);
+        quantityLabel.setBounds(80, 150, 200, 30);
+        priceLabel.setBounds(80, 190, 200, 30);
+        pickupLabel.setBounds(80, 230, 200, 30);
+        descriptionLabel.setBounds(80, 270, 200, 30);
+        phoneNoLabel.setBounds(80, 310, 200, 30);
+        orderNo.setBounds(80, 310, 200, 30);
+        orderStatus.setBounds(80, 310, 200, 30);
+
+        businessTxt.setBounds(300, 70, 200, 30);
+        productTxt.setBounds(300, 110, 200, 30);
+        quantityTxt.setBounds(300, 150, 200, 30);
+        priceTxt.setBounds(300, 190, 200, 30);
+        pickupTxt.setBounds(300, 230, 200, 30);
+        descriptionTxtArea.setBounds(10, 195, 400, 400);
+        phoneTxt.setBounds(300, 310, 200, 30);
+        orderNoTxt.setBounds(300, 310, 200, 30);
+        orderNoTxt.setVisible(false);
+        status.setBounds(300, 310, 200, 30);
+        status.setVisible(false);
+
+        place.setBounds(50, 350, 100, 30);
+
+        quantityTxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                String value = quantityTxt.getText();
+                int l = value.length();
+                if (e.getKeyChar() >= '0' && e.getKeyChar() <= '9'){
+                    quantityTxt.setEditable(true);
+                    quantityTxt.setText("");
+                }
+                else {
+                    quantityTxt.setEditable(false);
+                    quantityTxt.setText("Only numeric digits");
+                }
+            }
+        });
+        priceTxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                String value = priceTxt.getText();
+                int l = value.length();
+                if (e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyChar() == '.'){
+                    priceTxt.setEditable(true);
+                    priceTxt.setText("");
+                }
+                else {
+                    priceTxt.setEditable(false);
+                    priceTxt.setText("Only numeric digits");
+                }
+            }
+        });
+
+        deliveryFrame.add(businessLabel);
+        deliveryFrame.add(businessTxt);
+        deliveryFrame.add(productLabel);
+        deliveryFrame.add(productTxt);
+        deliveryFrame.add(quantityLabel);
+        deliveryFrame.add(quantityTxt);
+        deliveryFrame.add(priceLabel);
+        deliveryFrame.add(priceTxt);
+        deliveryFrame.add(pickupLabel);
+        deliveryFrame.add(pickupTxt);
+        deliveryFrame.add(descriptionLabel);
+        deliveryFrame.add(descriptionTxtArea);
+        deliveryFrame.add(phoneNoLabel);
+        deliveryFrame.add(phoneTxt);
+        deliveryFrame.add(orderNo);
+        deliveryFrame.add(orderNoTxt);
+        deliveryFrame.add(orderStatus);
+        deliveryFrame.add(status);
+
+        deliveryFrame.add(place);
+
+        place.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                orderNoTxt.setText(createDeliveryID());
+                status.setSelectedItem("Received");
+
+                String businessName = businessTxt.getText();
+                String productName = productTxt.getText();
+                int quantity = Integer.parseInt(quantityTxt.getText());
+                double price = Double.parseDouble(priceTxt.getText());
+                String pickup = pickupTxt.getText();
+                String instruction = descriptionTxtArea.getText();
+                String phoneNo = phoneTxt.getText();
+                String oderNo = orderNoTxt.getText();
+                String stat = status.getSelectedItem().toString();
+
+                Connection connection = connect();
+                try {
+
+                    String query = ("INSERT INTO orders(business_name, product_name, quantity, price, pickup, description, phone_no, order_no, status) values(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
+                    preparedStatement.setString(1, businessName);
+                    preparedStatement.setString(2, productName);
+                    preparedStatement.setInt(3, quantity);
+                    preparedStatement.setDouble(4, price);
+                    preparedStatement.setString(5, pickup);
+                    preparedStatement.setString(6, instruction);
+                    preparedStatement.setString(7, phoneNo);
+                    preparedStatement.setString(8, oderNo);
+                    preparedStatement.setString(9, stat);
+                    preparedStatement.execute();
+
+                    JOptionPane.showMessageDialog(place, "Order Placed Successfully");
+                }catch (Exception ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+
+
+            }
+        });
 
     }
 
@@ -823,20 +970,184 @@ public class LoginRegister extends JFrame{
 
         JFrame pickupFrame = new JFrame("Pickup Orders");
 
+          JLabel businessLabel, productLabel, quantityLabel, priceLabel, pickupLabel, descriptionLabel, phoneNoLabel, orderNo, orderStatus;
+          JTextField businessTxt, productTxt, quantityTxt, priceTxt, pickupTxt, phoneTxt, orderNoTxt;
+          JTextArea descriptionTxtArea;
+          JButton place, clear;
 
+        pickupFrame.setVisible(true);
+        pickupFrame.setSize(800, 700);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        businessLabel = new JLabel("Business Name");
+        productLabel = new JLabel("Items");
+        quantityLabel = new JLabel("Quantity");
+        priceLabel = new JLabel("Price");
+        pickupLabel = new JLabel("Pickup Location");
+        descriptionLabel = new JLabel("Instructions");
+        phoneNoLabel = new JLabel("Phone Number");
+        orderNo = new JLabel("Order No");
+        orderStatus = new JLabel("Order Status");
+        businessTxt = new JTextField();
+        productTxt = new JTextField();
+        quantityTxt = new JTextField();
+        priceTxt = new JTextField();
+        pickupTxt = new JTextField();
+        descriptionTxtArea = new JTextArea();
+        phoneTxt = new JTextField();
+        orderNoTxt = new JTextField();
+        String [] choices = {"Received", "Processing","Failed", "Cancelled", "Completed"};
+        final JComboBox<String> status = new JComboBox<>(choices);
+
+        place = new JButton("Place Order");
+        clear = new JButton("Clear");
+
+        businessLabel.setBounds(80, 70, 200, 30);
+        productLabel.setBounds(80, 110, 200, 30);
+        quantityLabel.setBounds(80, 150, 200, 30);
+        priceLabel.setBounds(80, 190, 200, 30);
+        pickupLabel.setBounds(80, 230, 200, 30);
+        descriptionLabel.setBounds(80, 270, 200, 30);
+        phoneNoLabel.setBounds(80, 310, 200, 30);
+        orderNo.setBounds(80, 310, 200, 30);
+        orderStatus.setBounds(80, 310, 200, 30);
+
+        businessTxt.setBounds(300, 70, 200, 30);
+        productTxt.setBounds(300, 110, 200, 30);
+        quantityTxt.setBounds(300, 150, 200, 30);
+        priceTxt.setBounds(300, 190, 200, 30);
+        pickupTxt.setBounds(300, 230, 200, 30);
+        descriptionTxtArea.setBounds(10, 195, 400, 400);
+        phoneTxt.setBounds(300, 310, 200, 30);
+        orderNoTxt.setBounds(300, 310, 200, 30);
+        orderNoTxt.setVisible(false);
+        status.setBounds(300, 310, 200, 30);
+        status.setVisible(false);
+
+        place.setBounds(50, 350, 100, 30);
+        clear.setBounds(170, 350, 100, 30);
+
+        quantityTxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                String value = quantityTxt.getText();
+                int l = value.length();
+                if (e.getKeyChar() >= '0' && e.getKeyChar() <= '9'){
+                    quantityTxt.setEditable(true);
+                    quantityTxt.setText("");
+                }
+                else {
+                    quantityTxt.setEditable(false);
+                    quantityTxt.setText("Only numeric digits");
+                }
+            }
+        });
+        priceTxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                String value = priceTxt.getText();
+                int l = value.length();
+                if (e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyChar() == '.'){
+                    priceTxt.setEditable(true);
+                    priceTxt.setText("");
+                }
+                else {
+                    priceTxt.setEditable(false);
+                    priceTxt.setText("Only numeric digits");
+                }
+            }
+        });
+
+        pickupFrame.add(businessLabel);
+        pickupFrame.add(businessTxt);
+        pickupFrame.add(productLabel);
+        pickupFrame.add(productTxt);
+        pickupFrame.add(quantityLabel);
+        pickupFrame.add(quantityTxt);
+        pickupFrame.add(priceLabel);
+        pickupFrame.add(priceTxt);
+        pickupFrame.add(pickupLabel);
+        pickupFrame.add(pickupTxt);
+        pickupFrame.add(descriptionLabel);
+        pickupFrame.add(descriptionTxtArea);
+        pickupFrame.add(phoneNoLabel);
+        pickupFrame.add(phoneTxt);
+        pickupFrame.add(orderNo);
+        pickupFrame.add(orderNoTxt);
+        pickupFrame.add(orderStatus);
+        pickupFrame.add(status);
+
+        pickupFrame.add(place);
+        pickupFrame.add(clear);
+
+        place.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                orderNoTxt.setText(createPickupID());
+                status.setSelectedItem("Received");
+
+                String businessName = businessTxt.getText();
+                String productName = productTxt.getText();
+                int quantity = Integer.parseInt(quantityTxt.getText());
+                double price = Double.parseDouble(priceTxt.getText());
+                String pickup = pickupTxt.getText();
+                String instruction = descriptionTxtArea.getText();
+                String phoneNo = phoneTxt.getText();
+                String oderNo = orderNoTxt.getText();
+                String stat = status.getSelectedItem().toString();
+
+                Connection connection = connect();
+                try {
+
+                    String query = ("INSERT INTO orders(business_name, product_name, quantity, price, pickup, description, phone_no, order_no, status) values(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
+                    preparedStatement.setString(1, businessName);
+                    preparedStatement.setString(2, productName);
+                    preparedStatement.setInt(3, quantity);
+                    preparedStatement.setDouble(4, price);
+                    preparedStatement.setString(5, pickup);
+                    preparedStatement.setString(6, instruction);
+                    preparedStatement.setString(7, phoneNo);
+                    preparedStatement.setString(8, oderNo);
+                    preparedStatement.setString(9, stat);
+                    preparedStatement.execute();
+
+                    JOptionPane.showMessageDialog(place, "Order Placed Successfully");
+                }catch (Exception ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+
+
+            }
+        });
+
+        clear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                businessTxt.setText("");
+                productTxt.setText("");
+                quantityTxt.setText("");
+                priceTxt.setText("");
+                pickupTxt.setText("");
+                descriptionTxtArea.setText("");
+                phoneTxt.setText("");
+                orderNoTxt.setText("");
+                status.removeItem(status.getSelectedItem());
+            }
+        });
 
     }
     public void user_frame(){
 
         JFrame userFrame = new JFrame("Welcome" + username);
-
         JButton createDelivery = new JButton("Delivery Order");
         createDelivery.setForeground(Color.white);
 
         createDelivery.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                 createDeliveryOrderFunc();
             }
         });
 
@@ -847,7 +1158,7 @@ public class LoginRegister extends JFrame{
         createPickup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+               createPickupOrderFunc();
             }
         });
 

@@ -1,3 +1,6 @@
+
+JAVA GUI APPLICATION
+
 This is an order system where users can register and place order for shipping. 
 For now order processing to customers is done offline
 The system Admin will see their order and action on the same.
