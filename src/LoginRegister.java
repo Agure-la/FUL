@@ -36,7 +36,7 @@ public class LoginRegister extends JFrame{
     public static Connection connect(){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fufilment", "odenyagure", "password");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fufilment", "dbusername", "password");
             return con;
         } catch (Exception ex){
             ex.printStackTrace();
